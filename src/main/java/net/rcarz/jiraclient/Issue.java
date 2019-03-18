@@ -729,7 +729,14 @@ public class Issue extends Resource {
                 startAt
             );
             /* backwards compatibility shim - first page only */
-            this.issueIterator.hasNext();
+            try {
+                this.issueIterator.hasNext();
+            } catch (RuntimeException e) {
+                if (e.getCause().getClass().equals(JiraException.class)) {
+                    throw (JiraException) e.getCause();
+                }
+                throw e;
+            }
             this.max = issueIterator.maxResults;
             this.start = issueIterator.startAt;
             this.issues = issueIterator.issues;
